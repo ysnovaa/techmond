@@ -453,23 +453,6 @@ def my_order_view(request):
     return render(request,'ecom/my_order.html',{'data':zip(ordered_products,orders)})
  
 
-
-
-# @login_required(login_url='customerlogin')
-# @user_passes_test(is_customer)
-# def my_order_view2(request):
-
-#     products=models.Product.objects.all()
-#     if 'product_ids' in request.COOKIES:
-#         product_ids = request.COOKIES['product_ids']
-#         counter=product_ids.split('|')
-#         product_count_in_cart=len(set(counter))
-#     else:
-#         product_count_in_cart=0
-#     return render(request,'ecom/my_order.html',{'products':products,'product_count_in_cart':product_count_in_cart})    
-
-
-
 #--------------for discharge patient bill (pdf) download and printing
 import io
 from xhtml2pdf import pisa
