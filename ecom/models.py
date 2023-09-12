@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+# Aqui creamos los modelos correspondientes para la base de datos
 
+# Model Customer
 class Customer(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/CustomerProfilePic/',null=True,blank=True)
@@ -17,7 +18,7 @@ class Customer(models.Model):
     def __str__(self):
         return self.user.first_name
 
-
+# Model Product
 class Product(models.Model):
     name=models.CharField(max_length=40)
     product_image= models.ImageField(upload_to='product_image/',null=True,blank=True)
@@ -26,7 +27,7 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-
+# Model Orders
 class Orders(models.Model):
     STATUS =(
         ('Pending','Pending'),
@@ -42,7 +43,7 @@ class Orders(models.Model):
     order_date= models.DateField(auto_now_add=True,null=True)
     status=models.CharField(max_length=50,null=True,choices=STATUS)
 
-
+# Model Feedback (Para las Reviews)
 class Feedback(models.Model):
     name=models.CharField(max_length=40)
     feedback=models.CharField(max_length=500)
