@@ -1,18 +1,10 @@
-"""
-
-Developed By : sumit kumar
-facebook : fb.com/sumit.luv
-Youtube :youtube.com/lazycoders
-
-
-"""
 from django.contrib import admin
 from django.urls import path
 from ecom import views
 from django.contrib.auth.views import LoginView,LogoutView
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.home_view,name=''),
+    path('',views.home_view,name='home'),
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
     path('logout', LogoutView.as_view(template_name='ecom/logout.html'),name='logout'),
     path('aboutus', views.aboutus_view),
@@ -54,6 +46,9 @@ urlpatterns = [
     path('remove-from-cart/<int:pk>', views.remove_from_cart_view,name='remove-from-cart'),
     path('customer-address', views.customer_address_view,name='customer-address'),
     path('payment-success', views.payment_success_view,name='payment-success'),
+
+    path('api/products/', views.ProductList.as_view(), name='product-list'),
+    path('api/products/<int:pk>/', views.get_product, name='get-product'),
 
 
 ]

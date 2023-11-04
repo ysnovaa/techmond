@@ -1,11 +1,25 @@
 from django.shortcuts import render,redirect,reverse
 from . import forms,models
-from django.http import HttpResponseRedirect,HttpResponse
-from django.core.mail import send_mail
-from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import login_required,user_passes_test
+from .models import Product
+
 from django.contrib import messages
 from django.conf import settings
+
+from django.http import HttpResponseRedirect,HttpResponse
+from django.core.mail import send_mail
+
+from django.contrib.auth.decorators import login_required,user_passes_test
+from django.contrib.auth.models import Group
+
+from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+
+from .serializers import ProductSerializer
+
+
 
 def home_view(request):
     products=models.Product.objects.all()
@@ -50,8 +64,6 @@ def customer_signup_view(request):
 #-----------for checking user iscustomer
 def is_customer(user):
     return user.groups.filter(name='CUSTOMER').exists()
-
-
 
 #---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,CUSTOMER
 def afterlogin_view(request):
@@ -559,3 +571,17 @@ def contactus_view(request):
             send_mail(str(name)+' || '+str(email),message, settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVING_USER, fail_silently = False)
             return render(request, 'ecom/contactussuccess.html')
     return render(request, 'ecom/contactus.html', {'form':sub})
+
+# API CONEXIÓN
+class ProductList(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+@api_view(['GET'])
+def get_product(request, pk):
+    try:
+        product = Product.objects.get(pk=pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    except Product.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)

@@ -27,7 +27,7 @@ SECRET_KEY = '#vw(03o=(9kbvg!&2d5i!2$_58x@_-3l4wujpow6(ym37jxnza'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['34.125.228.129']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ecom',
     'widget_tweaks',
-
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
