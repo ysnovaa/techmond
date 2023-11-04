@@ -16,9 +16,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from .serializers import ProductSerializer
-
 
 
 def home_view(request):
@@ -520,10 +518,6 @@ def download_invoice_view(request,orderID,productID):
 
     }
     return render_to_pdf('ecom/download_invoice.html',mydict)
-
-
-
-
 
 
 @login_required(login_url='customerlogin')
