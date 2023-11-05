@@ -54,8 +54,7 @@ urlpatterns = [
     path('api/products/', views.ProductList.as_view(), name='product-list'),
     path('api/products/<int:pk>/', views.get_product, name='get-product'),
 
-
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 
 
