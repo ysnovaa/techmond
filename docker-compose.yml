@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: dockerfile.django
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  flask:
+    build:
+      context: .
+      dockerfile: server/dockerfile.flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app

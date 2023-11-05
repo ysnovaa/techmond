@@ -1,0 +1,18 @@
+FROM python:3.9
+
+# Establece el directorio de trabajo en /app
+WORKDIR /app
+
+# Copia el archivo de requisitos y los archivos del proyecto al contenedor
+COPY requirements.txt /app/
+COPY . /app/
+
+# Instala las dependencias
+RUN pip install -r requirements.txt
+
+# Expone el puerto 8000
+EXPOSE 8000
+
+# Ejecuta el comando para iniciar tu aplicación
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
