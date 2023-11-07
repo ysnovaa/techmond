@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Techmond accesorios</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .button-container {
+            text-align: center; /* Centra los botones */
+            margin-top: 50px;
+        }
+
+        .button-container form {
+            display: inline-block; /* Muestra los formularios en línea */
+            margin: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 9px #999;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            color: white;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        /* Footer styling */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .button-container form {
+                display: block; /* Los botones se apilan verticalmente en pantallas pequeñas */
+                margin: 10px auto; /* Centra los botones */
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.is_authenticated %}
+        {% include "ecom/customer_navbar.html" %}
+    {% else %}
+        {% include "ecom/navbar.html" %}
+    {% endif %}
+    <div class="button-container">
+        <h1>Consulta de APIs</h1>
+        <!-- Botón para consultar la API local -->
+        <form action="{% url 'api_products' %}" method="get">
+            <button type="submit">Consultar API Local</button>
+        </form>
+        <!-- Botón para consultar la API externa -->
+        <!-- Asegúrate de reemplazar 'http://api_externa.com/endpoint' con la URL real de la API externa -->
+        <form action="https://jsonplaceholder.typicode.com/posts" method="get">
+            <button type="submit">Consultar API Externa</button>
+        </form>
+        <br><br><br><br><br><br>
+    </div>
+    {% include "ecom/footer.html" %}
+</body>
+</html>

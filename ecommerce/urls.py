@@ -1,18 +1,17 @@
-"""
-
-Developed By : sumit kumar
-facebook : fb.com/sumit.luv
-Youtube :youtube.com/lazycoders
-
-
-"""
 from django.contrib import admin
 from django.urls import path
 from ecom import views
 from django.contrib.auth.views import LoginView,LogoutView
+from ecom.views import ProductListApiView, ProductDetailView
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home_view,name=''),
+    path('change-language/', views.change_language, name='change_language'),
+    path('api/productos/', views.API, name='api'),
+    path('api/products/', ProductListApiView.as_view(), name='api_products'),
+    path('products/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
     path('logout', LogoutView.as_view(template_name='ecom/logout.html'),name='logout'),
     path('aboutus', views.aboutus_view),

@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
-# Create your models here.
+
+
 
 class Customer(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
@@ -23,8 +25,9 @@ class Product(models.Model):
     product_image= models.ImageField(upload_to='product_image/',null=True,blank=True)
     price = models.PositiveIntegerField()
     description=models.CharField(max_length=40)
-    def __str__(self):
-        return self.name
+    sales_count = models.IntegerField(default=0)
+    def get_absolute_url(self):
+        return reverse('product_detail', kwargs={'pk': self.pk})
 
 
 class Orders(models.Model):

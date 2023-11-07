@@ -73,9 +73,42 @@ written By : sumit kumar
 <br><br><br><br>
 
 <div class="container">
+  <div id="recommended-products">
+    <h2>Productos recomendados</h2>
+    <table class="table table-hover table-bordered" id="dev-table_1">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Imagen</th>
+          <th>Precio</th>
+          <th>Descripción</th>
+          <th>Acción</th>
+
+        </tr>
+      </thead>
+      {% for product in recommended_products %}
+  {% if product %}
+
+      <tr>
+        <td> {{product.name}}</td>
+        <td> <img src="{% static product.product_image.url %}" alt="Profile Pic" height="50px" width="50px" /></td>
+        <td>$ {{product.price}}</td>
+        <td>{{product.description}}</td>
+        <td><a href="{% url 'add-to-cart' product.id %}" class="btn btn-primary">Agregar al Carrito</a></td>
+
+      </tr>
+      {%else%}
+      <br><br><br>
+      <p>No recommendations available.</p>
+      {% endif %}
+      {% endfor %}
+    </table>
+</div>
+
+
   <div class="panel panel-success">
     <div class="panel-heading">
-      <h6 style="text-align:center;" class="panel-title">Mi carrito de compras</h6>
+      <h6 style="text-align:center;" class="panel-title">Tú carrito de compras</h6>
     </div>
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
@@ -115,8 +148,7 @@ written By : sumit kumar
 </div>
 
 
+
 <br><br><br><br><br>
-<!--
-developed By : sumit kumar
--->
+
 {% endblock content %}

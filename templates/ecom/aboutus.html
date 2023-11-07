@@ -21,11 +21,37 @@
   {%endif%}
   <br><br><br>
 <h3 style="text-align:center;">Bienvenidos a Techmond accesirios, somos... </h3>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<section id="about-us">
+  <div class="container">
+    <h2>Quiénes Somos</h2>
+    <p>Todo lo que necesitas en un solo lugar</p>
+    <p>El proyecto consiste en desarrollar una plataforma de comercio electrónico (e-commerce) dedicada exclusivamente a la venta de repuestos y componentes para computadoras. El objetivo principal de este sitio web es proporcionar a los clientes una experiencia de compra en línea eficiente, segura y conveniente, así como asegurar la disponibilidad de una amplia variedad de repuestos para computadoras de diferentes marcas y modelos.</p>
+  </div>
+</section>
+
+<style>
+  #about-us {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    margin-top: 2rem;
+  }
+
+  #about-us .container {
+    max-width: 1140px;
+    margin: auto;
+    padding: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    #about-us .container {
+      padding: 0.5rem;
+    }
+    #about-us h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
   {% include "ecom/footer.html" %}
 </body>
-<!--
-developed By : sumit kumar
--->
 
 </html>

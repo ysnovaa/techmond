@@ -6,6 +6,19 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib import messages
 from django.conf import settings
+from .models import Customer, Product, Orders, Feedback
+from django.utils import translation
+from django.http import JsonResponse
+from django.views.generic import View
+from django.urls import reverse
+from .models import Product
+import requests
+
+def change_language(request):
+    language = request.GET.get('language', 'en')  # Obtiene el idioma de la URL, default en inglés
+    translation.activate(language)
+    request.session[translation.LANGUAGE_SESSION_KEY] = language
+    return redirect(request.META.get('HTTP_REFERER', '/'))  # Redirige a la página anterior
 
 def home_view(request):
     products=models.Product.objects.all()
@@ -235,7 +248,17 @@ def add_to_cart_view(request,pk):
     else:
         product_count_in_cart=1
 
-    response = render(request, 'ecom/index.html',{'products':products,'product_count_in_cart':product_count_in_cart,'redirect_to' : request.GET['next_page']})
+    #response = render(request, 'ecom/index.html',{'products':products,'product_count_in_cart':product_count_in_cart,'redirect_to' : request.GET['next_page']})
+
+    # Use un valor predeterminado si 'next_page' no está presente
+    redirect_to = request.GET.get('next_page', '/cart')
+
+    response = render(request, 'ecom/index.html', {
+        'products': products,
+        'product_count_in_cart': product_count_in_cart,
+        'redirect_to': redirect_to
+    })
+
 
     #adding product id to cookies
     if 'product_ids' in request.COOKIES:
@@ -256,10 +279,17 @@ def add_to_cart_view(request,pk):
 
     return response
 
-
+def get_popular_products():
+    # Obtiene los productos más populares basados en el campo 'sales_count'
+    # Seleccionamos los primeros 5 productos más populares como ejemplo
+    return models.Product.objects.all().order_by('-sales_count')[:5]
 
 # for checkout of cart
 def cart_view(request):
+
+    # Obtén los productos recomendados
+    recommended_products = get_popular_products()
+
     #for cart counter
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
@@ -280,7 +310,15 @@ def cart_view(request):
             #for total price shown in cart
             for p in products:
                 total=total+p.price
-    return render(request,'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
+    #return render(request,'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
+    return render(request, 'ecom/cart.html', {
+        'products': products,
+        'total': total,
+        'product_count_in_cart': product_count_in_cart,
+        'recommended_products': recommended_products  # Asegúrate de agregar esto en el contexto.
+    })
+
+    
 
 
 def remove_from_cart_view(request,pk):
@@ -559,3 +597,94 @@ def contactus_view(request):
             send_mail(str(name)+' || '+str(email),message, settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVING_USER, fail_silently = False)
             return render(request, 'ecom/contactussuccess.html')
     return render(request, 'ecom/contactus.html', {'form':sub})
+
+def popular_products_view(request):
+    # Suponiendo que has agregado un campo sales_count al modelo Product
+    popular_products = Product.objects.order_by('-sales_count')[:10]  # Los 10 productos más vendidos
+    context = {
+        'popular_products': popular_products,
+    }
+    return render(request, 'ecom/cart.html', context)
+
+
+def recommended_products_view(request):
+    if request.user.is_authenticated:
+        customer_orders = Orders.objects.filter(customer__user=request.user)
+        products_bought = Product.objects.filter(orders__in=customer_orders).distinct()
+        
+        # Obtener otros clientes que compraron los mismos productos
+        other_customers = Customer.objects.filter(orders__product__in=products_bought).exclude(user=request.user)
+        
+        # Recomendar productos que estos clientes también compraron
+        recommended_products = Product.objects.filter(orders__customer__in=other_customers).distinct().exclude(id__in=products_bought)[:10]
+        
+        context = {
+            'recommended_products': recommended_products,
+        }
+    else:
+        context = {'message': 'You need to login to see this page'}
+    
+    return render(request, 'ecom/cart.html', context)
+
+def API(request):
+    return render(request, 'ecom/consulta_API.html')
+
+class ProductListApiView(View):
+
+    def get(self, request, *args, **kwargs):
+        # Obtener los productos
+        productos = Product.objects.all().values(
+            'id', 'name', 'price', 'description', 'sales_count'
+        )
+        
+        # Construir la data para la respuesta JSON
+        data = [
+            {
+                'id': producto['id'],
+                'name': producto['name'],
+                'price': producto['price'],
+                'description': producto['description'],
+                'sales_count': producto['sales_count'],
+                # Suponiendo que tienes un método get_absolute_url en tu modelo Product
+                'url': request.build_absolute_uri(
+                    reverse('product_detail', kwargs={'pk': producto['id']})
+                ),
+                # La URL de la imagen necesita manejar el caso en que product_image sea None
+                'product_image_url': request.build_absolute_uri(
+                    producto['product_image'].url if producto.get('product_image') else ''
+                )
+            }
+            for producto in productos
+        ]
+        
+        return JsonResponse(data, safe=False)
+    
+# Vista que actúa como un proxy para la API externa
+def get_external_api_data(request):
+    # URL de la API externa
+    url = 'https://jsonplaceholder.typicode.com/posts'
+    
+    # Realizar la petición GET a la API externa
+    response = requests.get(url)
+    
+    # Comprobar si la petición fue exitosa
+    if response.status_code == 200:
+        # Convertir la respuesta a JSON
+        data = response.json()
+        
+        # Si deseas devolver directamente la respuesta en JSON
+        #return JsonResponse(data, safe=False)
+        
+        # O si deseas pasar los datos a una plantilla
+        return render(request, 'consulta_API.html', {'data': data})
+    else:
+        # Manejar la respuesta si la petición no fue exitosa
+        return JsonResponse({'error': 'No se pudo obtener datos de la API externa'}, status=response.status_code)
+    
+from django.views.generic.detail import DetailView
+from .models import Product
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'product_detail.html'
+    context_object_name = 'product'
