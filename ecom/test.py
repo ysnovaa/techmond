@@ -7,7 +7,6 @@ class ProductModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # Configura datos no modificables para todas las pruebas del conjunto de pruebas.
         Product.objects.create(name='Example Product', price=100, description='This is an example product description.')
 
     def test_name_label(self):
@@ -46,7 +45,7 @@ class HomeViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.home_url = reverse('home')  # Asegúrate de reemplazar 'home' con el nombre de la URL de tu vista home.
+        self.home_url = reverse('home')
 
     def test_home_view_with_no_product_ids(self):
         response = self.client.get(self.home_url)
@@ -65,7 +64,7 @@ class HomeViewTest(TestCase):
         self.assertEqual(response.context['product_count_in_cart'], 3)
 
     def test_home_view_authenticated_user(self):
-        self.client.login(username='failuser', password='12345')  # Asegúrate de reemplazar con credenciales de usuario válidas.
+        self.client.login(username='failuser', password='12345') 
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, 'afterlogin')  # Asegúrate de reemplazar 'afterlogin' con la URL correcta después de iniciar sesión.
+        self.assertRedirects(response, 'afterlogin')
